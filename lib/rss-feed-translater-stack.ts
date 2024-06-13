@@ -57,7 +57,7 @@ export class RssFeedTranslaterStack extends Stack {
           retryAttempts: 3,
         }),
       ],
-    );
+    });
 
     const notificationHistoryTable = new dynamodb.Table(
       this,
