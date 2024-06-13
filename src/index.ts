@@ -1,6 +1,6 @@
 import Parser from "rss-parser";
 import dayjs from "dayjs";
-import { isNewItem, isValidItem } from "./lib/validate";
+import { fetchHistoryByGuid } from "./lib/history"; // Adjusted import to fetchHistoryByGuid from history.ts
 import { buildMessageBody, notify } from "./lib/notify";
 import { translate } from "./lib/translate";
 import { feeds } from "./feeds";
@@ -34,11 +34,7 @@ export const handler = async () => {
         posts.items.map(
           async (item) =>
             isValidItem(item) &&
-            (await isNewItem({
-              title: item.title!,
-              nowDate,
-              pubDate: dayjs(item.pubDate),
-            }))
+            (await fetchHistoryByGuid(item.guid!)) // Adjusted call to fetchHistoryByGuid and passed Guid
         )
       );
       const filteredPosts = posts.items.filter(() => bitsForFilter.shift());
@@ -51,6 +47,7 @@ export const handler = async () => {
           description: (await translate(item.description!))!,
           rawDescription: item.description!,
           pubDate: item.pubDate!,
+          guid: item.guid!,
         }))
       );
 
@@ -78,7 +75,7 @@ export const handler = async () => {
         for await (const post of newPosts) {
           const publishedAt = dayjs(post.pubDate).toISOString();
           const item = {
-            Title: post.rawTitle! + publishedAt, // タイトルと公開日で一意とする
+            Guid: post.guid!, // Use guid as the key
             Type: feed.type,
             Link: post.link,
             Description: post.rawDescription,
@@ -87,7 +84,7 @@ export const handler = async () => {
           };
           if (!DRY_RUN) {
             console.info(item);
-            putHistory(item);
+            await putHistory(item);
           } else {
             console.info(item);
             console.info("DRY_RUN is true. Skip pushing history.");

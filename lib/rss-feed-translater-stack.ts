@@ -64,7 +64,7 @@ export class RssFeedTranslaterStack extends Stack {
       `notificationHistory`,
       {
         partitionKey: {
-          name: "Title",
+          name: "Guid",
           type: dynamodb.AttributeType.STRING,
         },
         tableName: "RSSNotificationHistory",

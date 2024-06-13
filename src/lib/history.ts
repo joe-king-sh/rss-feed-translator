@@ -12,12 +12,12 @@ const client = new DynamoDBClient({
 });
 const ddbClient = DynamoDBDocumentClient.from(client);
 
-export const fetchHistoryByTitle = async (title: string) => {
+export const fetchHistoryByGuid = async (guid: string) => {
   const queryParams: QueryCommandInput = {
     TableName: "RSSNotificationHistory",
     ConsistentRead: false,
-    KeyConditionExpression: "Title = :value",
-    ExpressionAttributeValues: { ":value": title },
+    KeyConditionExpression: "Guid = :value",
+    ExpressionAttributeValues: { ":value": guid },
   };
 
   try {
@@ -30,7 +30,7 @@ export const fetchHistoryByTitle = async (title: string) => {
 };
 
 type PutHistoryInput = {
-  Title: string;
+  Guid: string;
   Type: string;
   Link: string;
   Description: string;
