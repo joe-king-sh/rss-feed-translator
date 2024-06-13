@@ -1,11 +1,12 @@
 import Parser from "rss-parser";
 import dayjs from "dayjs";
-import { fetchHistoryByGuid } from "./lib/history"; // Adjusted import to fetchHistoryByGuid from history.ts
+import { fetchHistoryByGuid } from "./lib/history";
 import { buildMessageBody, notify } from "./lib/notify";
 import { translate } from "./lib/translate";
 import { feeds } from "./feeds";
 import { getEnv } from "./env";
 import { putHistory } from "./lib/history";
+import { isValidItem } from "./lib/validate"; // Import isValidItem from lib/validate
 import { config } from "dotenv";
 
 config();
@@ -34,7 +35,7 @@ export const handler = async () => {
         posts.items.map(
           async (item) =>
             isValidItem(item) &&
-            (await fetchHistoryByGuid(item.guid!)) // Adjusted call to fetchHistoryByGuid and passed Guid
+            (await fetchHistoryByGuid(item.guid!))
         )
       );
       const filteredPosts = posts.items.filter(() => bitsForFilter.shift());
@@ -75,7 +76,7 @@ export const handler = async () => {
         for await (const post of newPosts) {
           const publishedAt = dayjs(post.pubDate).toISOString();
           const item = {
-            Guid: post.guid!, // Use guid as the key
+            Guid: post.guid!,
             Type: feed.type,
             Link: post.link,
             Description: post.rawDescription,
