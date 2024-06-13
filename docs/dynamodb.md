@@ -12,7 +12,7 @@ RSS 側の記事を識別するキー(記事名が現実的か)を特定し、�
 テーブル名: NotificationHistory
 | Attribute | Type | Key | Example |
 | :---------- | :----- | :-- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Title | String | PK | Building a Visual Quality Control Solution with Amazon Lookout for Vision and Advanced Video Preprocessing |
+| Guid | String | PK | 123e4567-e89b-12d3-a456-426614174000 |
 | Type | String | | "blogs" or "announcements" |
 | Link | String | | https://aws.amazon.com/jp/blogs/apn/building-a-visual-quality-control-solution-with-amazon-lookout-for-vision-and-advanced-video-preprocessing/ |
 | Description | String | | Conveyor belts are an essential material handling tool for various industrial processes, but high throughput rates make it difficult for operators to detect defective products and remove them from the production line. Learn how Grid Dynamics built an advanced video preprocessor and integrated it with Amazon Lookout for Vision, using a food processing use case as an example. Amazon Lookout for Vision is an AutoML service for detecting anomalies in images. |

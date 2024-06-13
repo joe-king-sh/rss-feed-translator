@@ -1,6 +1,6 @@
 import Parser from "rss-parser";
 import dayjs from "dayjs";
-import { isNewItem, isValidItem } from "./lib/validate";
+import { fetchHistoryByGuid, isValidItem } from "./lib/validate";
 import { buildMessageBody, notify } from "./lib/notify";
 import { translate } from "./lib/translate";
 import { feeds } from "./feeds";
@@ -12,7 +12,7 @@ config();
 
 const parser = new Parser({
   customFields: {
-    item: ["description"],
+    item: ["description", "guid"],
   },
 });
 
@@ -34,11 +34,7 @@ export const handler = async () => {
         posts.items.map(
           async (item) =>
             isValidItem(item) &&
-            (await isNewItem({
-              title: item.title!,
-              nowDate,
-              pubDate: dayjs(item.pubDate),
-            }))
+            (await fetchHistoryByGuid(item.guid!))
         )
       );
       const filteredPosts = posts.items.filter(() => bitsForFilter.shift());
@@ -51,6 +47,7 @@ export const handler = async () => {
           description: (await translate(item.description!))!,
           rawDescription: item.description!,
           pubDate: item.pubDate!,
+          guid: item.guid!,
         }))
       );
 
@@ -78,7 +75,7 @@ export const handler = async () => {
         for await (const post of newPosts) {
           const publishedAt = dayjs(post.pubDate).toISOString();
           const item = {
-            Title: post.rawTitle! + publishedAt, // タイトルと公開日で一意とする
+            Guid: post.guid!,
             Type: feed.type,
             Link: post.link,
             Description: post.rawDescription,
