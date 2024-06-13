@@ -51,6 +51,7 @@ export const handler = async () => {
           description: (await translate(item.description!))!,
           rawDescription: item.description!,
           pubDate: item.pubDate!,
+          guid: item.guid!, // Generate a unique "Guid" for each RSS feed item
         }))
       );
 
@@ -78,7 +79,7 @@ export const handler = async () => {
         for await (const post of newPosts) {
           const publishedAt = dayjs(post.pubDate).toISOString();
           const item = {
-            Title: post.rawTitle! + publishedAt, // タイトルと公開日で一意とする
+            Guid: post.guid, // Use "Guid" instead of "Title" + "PublishedAt" for identifying unique items
             Type: feed.type,
             Link: post.link,
             Description: post.rawDescription,

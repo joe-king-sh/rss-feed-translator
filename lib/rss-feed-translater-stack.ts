@@ -57,14 +57,14 @@ export class RssFeedTranslaterStack extends Stack {
           retryAttempts: 3,
         }),
       ],
-    });
+    );
 
     const notificationHistoryTable = new dynamodb.Table(
       this,
       `notificationHistory`,
       {
         partitionKey: {
-          name: "Title",
+          name: "Guid",
           type: dynamodb.AttributeType.STRING,
         },
         tableName: "RSSNotificationHistory",
