@@ -23,15 +23,15 @@ AWS から英語で提供されている RSS を Amazon Translate で日本語�
 
 デプロイ前に以下をパラメーターストアに登録する必要があります
 
-- `/RSS_FEED_TRANSLATER/SLACK_INCOMING_WEBHOOK-URL-BLOGS`
+- `/<dev|prod>/RSS_FEED_TRANSLATER/SLACK_INCOMING_WEBHOOK-URL-BLOGS`
   - AWS Blogs の通知先となる Slack の WebhookURL
-- `/RSS_FEED_TRANSLATER/SLACK_INCOMING-WEBHOOK-URL-ANNOUNCEMENTS`
+- `/<dev|prod>/RSS_FEED_TRANSLATER/SLACK_INCOMING-WEBHOOK-URL-ANNOUNCEMENTS`
   - What's New と AWS API Changes の通知先となる Slack の WebhookURL
 
 ### 2. デプロイ
 
 ```bash
-$ npx cdk deploy
+$ npx cdk deploy -c stage=<dev|prod>
 ```
 
 ## ローカル実行
