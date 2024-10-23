@@ -1,3 +1,5 @@
+import { getEnv } from "../env";
+
 type WebHookMessageBody = {
   text: string;
   blocks: Array<{ type: string; text: { type: string; text: string } }>;
@@ -35,11 +37,41 @@ export const buildMessageBody = ({
   icon_emoji: ":aws-logo:",
 });
 
+// エラーメッセージ用の関数を追加
+export const buildErrorMessageBody = ({
+  source,
+  errorMessage,
+}: {
+  source: string;
+  errorMessage: string;
+}): WebHookMessageBody => ({
+  text: source,
+  blocks: [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: errorMessage,
+      },
+    },
+  ],
+  unfurl_links: true,
+  username: source,
+  icon_emoji: ":aws-logo:",
+});
+
 export const notify = async (options: {
   url: string;
   body: WebHookMessageBody;
 }) => {
   console.info(JSON.stringify(options.body));
+
+  const { DRY_RUN } = getEnv();
+
+  if (DRY_RUN) {
+    console.info("DRY_RUN is true. Skip notification.");
+    return;
+  }
 
   const response = await fetch(options.url, {
     method: "POST",
