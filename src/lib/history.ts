@@ -1,28 +1,34 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
-  QueryCommand,
-  QueryCommandInput,
+  GetCommand,
   PutCommand,
-  PutCommandInput,
 } from "@aws-sdk/lib-dynamodb";
+import { getEnv } from "../env";
 
 const client = new DynamoDBClient({
   region: "ap-northeast-1",
 });
 const ddbClient = DynamoDBDocumentClient.from(client);
 
-export const fetchHistoryByTitle = async (title: string) => {
-  const queryParams: QueryCommandInput = {
-    TableName: "RSSNotificationHistory",
-    ConsistentRead: false,
-    KeyConditionExpression: "Title = :value",
-    ExpressionAttributeValues: { ":value": title },
-  };
+const { HISTORY_TABLE_NAME } = getEnv();
 
+export const fetchHistoryById = async (id: string) => {
   try {
-    const queryOutput = await ddbClient.send(new QueryCommand(queryParams));
-    return queryOutput.Items || [];
+    const { Item: historyItem } = await ddbClient.send(
+      new GetCommand({
+        TableName: HISTORY_TABLE_NAME,
+        Key: {
+          Id: id,
+        },
+      })
+    );
+
+    if (historyItem == null) {
+      return null;
+    }
+
+    return historyItem;
   } catch (error) {
     console.error(error);
     throw error;
@@ -30,6 +36,7 @@ export const fetchHistoryByTitle = async (title: string) => {
 };
 
 type PutHistoryInput = {
+  Id: string;
   Title: string;
   Type: string;
   Link: string;
@@ -39,10 +46,17 @@ type PutHistoryInput = {
 };
 
 export const putHistory = async (item: PutHistoryInput) => {
+  const { DRY_RUN } = getEnv();
+
+  if (DRY_RUN) {
+    console.info("DRY_RUN is true. Skip pushing history.");
+    return;
+  }
+
   try {
     await ddbClient.send(
       new PutCommand({
-        TableName: "RSSNotificationHistory",
+        TableName: HISTORY_TABLE_NAME,
         Item: item,
       })
     );

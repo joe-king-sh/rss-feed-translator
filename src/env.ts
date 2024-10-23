@@ -2,16 +2,19 @@ export const getEnv = () => {
   const {
     SLACK_INCOMING_WEBHOOK_URL_BLOGS,
     SLACK_INCOMING_WEBHOOK_URL_ANNOUNCEMENTS,
+    HISTORY_TABLE_NAME,
     DRY_RUN,
   } = process.env;
   if (!SLACK_INCOMING_WEBHOOK_URL_BLOGS)
     throw new Error("SLACK_INCOMING_WEBHOOK_URL_BLOGS is not set");
   if (!SLACK_INCOMING_WEBHOOK_URL_ANNOUNCEMENTS)
     throw new Error("SLACK_INCOMING_WEBHOOK_URL_ANNOUNCEMENTS is not set");
+  if (!HISTORY_TABLE_NAME) throw new Error("HISTORY_TABLE_NAME is not set");
 
   return {
     SLACK_INCOMING_WEBHOOK_URL_BLOGS,
     SLACK_INCOMING_WEBHOOK_URL_ANNOUNCEMENTS,
-    DRY_RUN: DRY_RUN === "true",
+    HISTORY_TABLE_NAME,
+    DRY_RUN: DRY_RUN === "false",
   };
 };
