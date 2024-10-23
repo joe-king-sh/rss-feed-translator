@@ -12,6 +12,6 @@ export const getEnv = () => {
   return {
     SLACK_INCOMING_WEBHOOK_URL_BLOGS,
     SLACK_INCOMING_WEBHOOK_URL_ANNOUNCEMENTS,
-    DRY_RUN: DRY_RUN === "true" ? true : false,
+    DRY_RUN: DRY_RUN === "true",
   };
 };
