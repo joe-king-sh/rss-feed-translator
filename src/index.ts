@@ -16,6 +16,34 @@ const parser = new Parser({
   },
 });
 
+// feedUrlからオリジンを取得
+const getOrigin = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.origin;
+  } catch {
+    return "";
+  }
+};
+
+// 相対パスかどうかを判定
+const isRelativePath = (link: string): boolean => {
+  return (
+    !link.startsWith("http://") &&
+    !link.startsWith("https://") &&
+    !link.startsWith("//")
+  );
+};
+
+// 相対パスを絶対URLに変換
+const toFullUrl = (link: string, feedUrl: string): string => {
+  if (isRelativePath(link)) {
+    const origin = getOrigin(feedUrl);
+    return `${origin}${link}`;
+  }
+  return link;
+};
+
 export const handler = async () => {
   const nowDate = dayjs();
 
@@ -48,16 +76,21 @@ export const handler = async () => {
         }
 
         const newPosts = await Promise.all(
-          filteredPosts.map(async (item) => ({
-            id: item.guid!,
-            feed: feed.title!,
-            title: (await translate(item.title!))!,
-            rawTitle: item.title!,
-            link: item.link!,
-            description: (await translate(item.description!))!,
-            rawDescription: item.description!,
-            pubDate: item.pubDate!,
-          }))
+          filteredPosts.map(async (item) => {
+            // リンクをfull URLに変換
+            const fullLink = toFullUrl(item.link!, feed.url);
+
+            return {
+              id: item.guid!,
+              feed: feed.title!,
+              title: (await translate(item.title!))!,
+              rawTitle: item.title!,
+              link: fullLink,
+              description: (await translate(item.description!))!,
+              rawDescription: item.description!,
+              pubDate: item.pubDate!,
+            };
+          })
         );
 
         if (newPosts.length > 0) {
@@ -84,7 +117,7 @@ export const handler = async () => {
               Id: post.id,
               Title: post.rawTitle,
               Type: feed.type,
-              Link: post.link,
+              Link: post.link, // 既にfull URLに変換済み
               Description: post.rawDescription,
               PublishedAt: publishedAt,
               NotifiedAt: dayjs().toISOString(),
