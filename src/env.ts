@@ -15,6 +15,6 @@ export const getEnv = () => {
     SLACK_INCOMING_WEBHOOK_URL_BLOGS,
     SLACK_INCOMING_WEBHOOK_URL_ANNOUNCEMENTS,
     HISTORY_TABLE_NAME,
-    DRY_RUN: DRY_RUN === "false",
+    DRY_RUN: DRY_RUN === "true",
   };
 };

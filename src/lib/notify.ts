@@ -8,6 +8,16 @@ type WebHookMessageBody = {
   icon_emoji: string;
 };
 
+// テキストを安全なサイズに切り詰める
+const truncateText = (text: string): string => {
+  // Slack制限定数
+  const maxLength = 1_000; // 各記事のdescriptionの制限
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return text.substring(0, maxLength - 3) + "...";
+};
+
 type BuildMessageBodyOptions = {
   source: string;
   posts: Array<{
@@ -17,25 +27,35 @@ type BuildMessageBodyOptions = {
   }>;
 };
 type BuildMessageBodyResponse = WebHookMessageBody;
+
 export const buildMessageBody = ({
   source,
   posts,
-}: BuildMessageBodyOptions): BuildMessageBodyResponse => ({
-  text: source,
-  blocks: posts.map((post) => ({
-    type: "section",
-    text: {
-      type: "mrkdwn",
-      text: `<${post.link}|${post.title}> \n ${post.description.replace(
-        /(<([^>]+)>)/gi,
-        ""
-      )}`,
-    },
-  })),
-  unfurl_links: true,
-  username: source,
-  icon_emoji: ":aws-logo:",
-});
+}: BuildMessageBodyOptions): BuildMessageBodyResponse => {
+  const body: WebHookMessageBody = {
+    text: source,
+    blocks: posts.map((post) => {
+      // descriptionのHTMLタグを除去
+      const cleanDescription = post.description.replace(/(<([^>]+)>)/gi, "");
+
+      // descriptionが長すぎる場合は切り詰める
+      const truncatedDescription = truncateText(cleanDescription);
+
+      return {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `<${post.link}|${post.title}> \n ${truncatedDescription}`,
+        },
+      };
+    }),
+    unfurl_links: true,
+    username: source,
+    icon_emoji: ":aws-logo:",
+  };
+
+  return body;
+};
 
 // エラーメッセージ用の関数を追加
 export const buildErrorMessageBody = ({

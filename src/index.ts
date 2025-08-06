@@ -58,7 +58,7 @@ export const handler = async () => {
         console.info(`Now processing ${feed.title}...`);
         const posts = await parser.parseURL(feed.url);
         console.info(
-          `Now processing ${feed.title}...Found ${posts.items.length} items!`
+          `Now processing ${feed.title}...Found ${posts.items.length} items!`,
         );
 
         const filteredPosts: typeof posts.items = [];
@@ -90,7 +90,7 @@ export const handler = async () => {
               rawDescription: item.description!,
               pubDate: item.pubDate!,
             };
-          })
+          }),
         );
 
         if (newPosts.length > 0) {
@@ -125,7 +125,7 @@ export const handler = async () => {
             await putHistory(item);
           }
         }
-      })
+      }),
     );
 
     return 0;

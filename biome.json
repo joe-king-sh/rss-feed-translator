@@ -1,24 +1,44 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-  "organizeImports": { "enabled": true },
+  "$schema": "https://biomejs.dev/schemas/latest/schema.json",
+  "vcs": {
+    "enabled": false,
+    "clientKind": "git",
+    "useIgnoreFile": false
+  },
+  "files": {
+    "includes": ["**", "!node_modules", "!cdk.out"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on"
+        }
+      }
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": false,
-      "correctness": { "noUnusedVariables": "error" },
+      "correctness": {
+        "noUnusedVariables": "error"
+      },
       "style": {
         "useConsistentArrayType": {
           "level": "error",
           "options": { "syntax": "shorthand" }
         }
       },
-      "suspicious": { "noDoubleEquals": "error", "noExplicitAny": "error" }
+      "suspicious": {
+        "noDoubleEquals": "error",
+        "noExplicitAny": "error"
+      }
     }
-  },
-  "formatter": {
-    "indentStyle": "space"
-  },
-  "files": {
-    "ignore": ["node_modules", "cdk.out"]
   }
 }
